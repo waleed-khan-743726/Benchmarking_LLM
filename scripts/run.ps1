@@ -64,10 +64,11 @@ if (-not (Test-ProjectProcess $backendPidFile 'uvicorn backend.main:app')) {
 }
 
 if (-not (Test-ProjectProcess $frontendPidFile 'vite.js*--host*127.0.0.1')) {
-    $node = 'C:\Program Files\nodejs\node.exe'
+    $node = Get-Command node.exe -ErrorAction SilentlyContinue
+    if (-not $node) { throw 'node.exe was not found on PATH. Install Node.js and rerun setup.' }
     $vite = Join-Path $ProjectRoot 'frontend\node_modules\vite\bin\vite.js'
     $frontend = Start-Process `
-        -FilePath $node `
+        -FilePath $node.Source `
         -ArgumentList $vite,'--host','127.0.0.1','--port','5173','--strictPort' `
         -WorkingDirectory (Join-Path $ProjectRoot 'frontend') `
         -RedirectStandardOutput (Join-Path $ProjectRoot 'logs\frontend.out.log') `
