@@ -29,8 +29,12 @@ New-Item -ItemType Directory -Path $ollamaHome -Force | Out-Null
 if (-not (Test-Path -LiteralPath $profileLink)) {
     New-Item -ItemType Junction -Path $profileLink -Target $ollamaHome | Out-Null
 } else {
-    $resolved = (Get-Item -LiteralPath $profileLink -Force).Target
-    if ($resolved -and $resolved -ne $ollamaHome) {
+    $existingProfilePath = Get-Item -LiteralPath $profileLink -Force
+    if ($existingProfilePath.LinkType -ne 'Junction') {
+        throw "$profileLink already exists and is not a junction. Review it manually; no files were moved or deleted."
+    }
+    $resolved = [IO.Path]::GetFullPath([string]($existingProfilePath.Target | Select-Object -First 1))
+    if ($resolved -ne [IO.Path]::GetFullPath($ollamaHome)) {
         throw "$profileLink already points to a different target; it was not modified."
     }
 }
