@@ -1,4 +1,7 @@
-param([switch]$IncludeReportDependencies)
+param(
+    [switch]$IncludeReportDependencies,
+    [string]$BasePython = $env:ROBOT_NAV_BASE_PYTHON
+)
 
 $ErrorActionPreference = 'Stop'
 $ProjectRoot = 'D:\Robot_Navigation_FYP'
@@ -13,23 +16,28 @@ if ($freeGB -lt 10) {
 
 $venvPython = Join-Path $ProjectRoot '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $venvPython)) {
-    $basePython = 'D:\Miniconda3\python.exe'
-    if (-not (Test-Path -LiteralPath $basePython)) {
-        throw 'D:\Miniconda3\python.exe was not found. Install or select a D:-based Python runtime.'
+    if ([string]::IsNullOrWhiteSpace($BasePython)) {
+        $BasePython = 'D:\Miniconda3\python.exe'
     }
-    & $basePython -m venv (Join-Path $ProjectRoot '.venv')
+    if (-not (Test-Path -LiteralPath $BasePython)) {
+        throw "Base Python was not found at $BasePython. Install Python on D: or pass -BasePython."
+    }
+    if ([IO.Path]::GetFullPath($BasePython) -notlike 'D:\*') {
+        throw 'The base Python path must be on D: for this project setup.'
+    }
+    & $BasePython -m venv (Join-Path $ProjectRoot '.venv')
 }
 
 $pythonExtras = if ($IncludeReportDependencies) { '.[dev,report]' } else { '.[dev]' }
 & $venvPython -m pip install --disable-pip-version-check -e $pythonExtras
 
-$npm = 'C:\Program Files\nodejs\npm.cmd'
-if (-not (Test-Path -LiteralPath $npm)) {
+$npm = Get-Command npm.cmd -ErrorAction SilentlyContinue
+if (-not $npm) {
     throw 'Node.js/npm was not found. Install Node, then rerun this project-scoped setup.'
 }
 Push-Location (Join-Path $ProjectRoot 'frontend')
 try {
-    & $npm install --no-audit --no-fund
+    & $npm.Source install --no-audit --no-fund
 } finally {
     Pop-Location
 }
