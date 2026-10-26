@@ -29,7 +29,9 @@ try {
 
 try {
     $tags = Invoke-RestMethod -Uri 'http://127.0.0.1:11434/api/tags' -TimeoutSec 3
-    Write-Host "Ollama: ready ($($tags.models.Count) models detected)" -ForegroundColor Green
+    $ollamaCommand = Get-Command ollama -ErrorAction SilentlyContinue
+    $version = if ($ollamaCommand) { (& $ollamaCommand.Source --version) -join '' } else { 'version unavailable' }
+    Write-Host "Ollama: ready ($version; $($tags.models.Count) models detected)" -ForegroundColor Green
 } catch {
     Write-Host 'Ollama: unavailable; offline simulator mode remains supported.' -ForegroundColor Yellow
 }

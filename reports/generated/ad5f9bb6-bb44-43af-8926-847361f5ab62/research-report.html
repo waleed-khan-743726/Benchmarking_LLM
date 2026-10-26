@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Live three-model baseline vs optimized benchmark · Robot Navigation Research Report</title>
+<style>
+body{font:16px/1.55 Arial,sans-serif;color:#1c2925;margin:0;background:#eef3f1}
+main{max-width:1050px;margin:30px auto;background:white;padding:48px;border-radius:14px}
+h1,h2{color:#10241d}.meta{color:#60746d}.notice,.empty{padding:18px;border-left:4px solid #2b8b69;background:#eef8f4}
+table{border-collapse:collapse;width:100%;margin:20px 0}th,td{padding:10px;border:1px solid #d9e3df;text-align:left}
+th{background:#edf4f1}code{background:#edf3f0;padding:2px 5px}@media print{body{background:white}main{margin:0;padding:20px}}
+</style></head><body><main>
+<p class="meta">COST EFFECTIVE OPTIMIZATION OF OPEN SOURCE LLM AGENTS FOR SYSTEM LEVEL TASK</p>
+<h1>Robot Navigation Experiment Report</h1>
+<p><strong>Experiment:</strong> Live three-model baseline vs optimized benchmark<br>
+<strong>Status:</strong> completed<br>
+<strong>Created:</strong> 2026-10-26T15:24:16.530832<br>
+<strong>Report generated:</strong> 2026-10-26T20:35:11+05:00<br>
+<strong>Application version:</strong> 0.1.0</p>
+<div class="notice">This report summarizes stored experimental observations. Failed runs remain in all success-rate denominators.</div>
+<h2>Executive summary</h2>
+<p>The experiment recorded 24 runs across 6 model/configuration groups. 12 runs met both interpretation and route-validity criteria. Detailed rows, including failures, remain available in JSON and CSV exports.</p>
+<h2>Observed findings</h2>
+<p>Within this experiment, baseline groups produced 0 verified successes across 12 runs, while optimized groups produced 12 across 12 runs. The lowest observed optimized group mean was 5710.82 ms for qwen3:0.6b. Optimized groups recorded 6 cache hits in total. These observations apply only to the recorded hardware, scenarios, and sample size.</p>
+<h2>System overview</h2>
+<p>A local language model interprets an instruction into a validated task. Deterministic A* then plans
+the four-directional route, and an independent validator checks every cell and transition. Dynamic map
+changes are replanned without another language-model call.</p>
+<h2>Experimental configuration</h2>
+<pre>{&#x27;environment&#x27;: {&#x27;logical_cpu_count&#x27;: 4, &#x27;physical_memory_gb&#x27;: 7.86, &#x27;platform&#x27;: &#x27;Windows-10-10.0.19045-SP0&#x27;, &#x27;processor&#x27;: &#x27;Intel64 Family 6 Model 78 Stepping 3, GenuineIntel&#x27;}, &#x27;models&#x27;: [&#x27;qwen2.5:0.5b&#x27;, &#x27;qwen3:0.6b&#x27;, &#x27;smollm2:1.7b-instruct-q4_K_M&#x27;], &#x27;prompt_modes&#x27;: [&#x27;baseline&#x27;, &#x27;optimized&#x27;], &#x27;repetitions&#x27;: 2, &#x27;scenario_ids&#x27;: [&#x27;basic-shortest-v1&#x27;, &#x27;restricted-area-v1&#x27;]}</pre>
+<h2>Model comparison</h2><table><thead><tr><th>Model</th><th>Configuration</th><th>Runs</th><th>Success rate</th><th>Mean wall latency</th><th>Failures</th><th>Cache hits</th></tr></thead><tbody><tr><td>qwen2.5:0.5b</td><td>baseline</td><td>4</td><td>0.0%</td><td>24162.42 ms</td><td>4</td><td>0</td></tr><tr><td>qwen2.5:0.5b</td><td>optimized</td><td>4</td><td>100.0%</td><td>7228.01 ms</td><td>0</td><td>2</td></tr><tr><td>qwen3:0.6b</td><td>baseline</td><td>4</td><td>0.0%</td><td>21694.08 ms</td><td>4</td><td>0</td></tr><tr><td>qwen3:0.6b</td><td>optimized</td><td>4</td><td>100.0%</td><td>5710.82 ms</td><td>0</td><td>2</td></tr><tr><td>smollm2:1.7b-instruct-q4_K_M</td><td>baseline</td><td>4</td><td>0.0%</td><td>38042.98 ms</td><td>4</td><td>0</td></tr><tr><td>smollm2:1.7b-instruct-q4_K_M</td><td>optimized</td><td>4</td><td>100.0%</td><td>14738.41 ms</td><td>0</td><td>2</td></tr></tbody></table>
+<h2>Methodology and interpretation</h2>
+<p>Success requires both a correct structured interpretation and a validator-approved route. Latency is
+reported in milliseconds. Cache hits are counted explicitly. Results from offline deterministic tests
+are not included as language-model observations.</p>
+<h2>Limitations</h2>
+<p>Local inference performance depends on the tested machine, model quantization, warm-up state, and
+scenario set. Small samples must not be generalized. Missing resource observations are shown as absent,
+not as zero.</p>
+<h2>Reproducibility</h2>
+<p>Use the stored experiment ID <code>ad5f9bb6-bb44-43af-8926-847361f5ab62</code>, configuration above, versioned
+scenario files, prompt versions, and raw JSON/CSV exports to inspect or repeat this experiment.</p>
+</main></body></html>

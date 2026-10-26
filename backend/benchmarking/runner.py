@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 from dataclasses import dataclass
 
 import psutil
@@ -37,6 +38,12 @@ class BenchmarkRunner:
                 "prompt_modes": list(config.prompt_modes),
                 "repetitions": config.repetitions,
                 "scenario_ids": [scenario.id for scenario in scenarios],
+                "environment": {
+                    "platform": platform.platform(),
+                    "processor": platform.processor() or "not reported by Windows",
+                    "logical_cpu_count": psutil.cpu_count(logical=True),
+                    "physical_memory_gb": round(psutil.virtual_memory().total / (1024**3), 2),
+                },
             },
         )
         final_status = "completed"

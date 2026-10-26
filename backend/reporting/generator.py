@@ -55,6 +55,8 @@ th{{background:#edf4f1}}code{{background:#edf3f0;padding:2px 5px}}@media print{{
 <div class="notice">{escape(status_note)}</div>
 <h2>Executive summary</h2>
 <p>{self._executive_summary(rows, summary)}</p>
+<h2>Observed findings</h2>
+<p>{self._findings(summary)}</p>
 <h2>System overview</h2>
 <p>A local language model interprets an instruction into a validated task. Deterministic A* then plans
 the four-directional route, and an independent validator checks every cell and transition. Dynamic map
@@ -101,6 +103,9 @@ scenario files, prompt versions, and raw JSON/CSV exports to inspect or repeat t
             Spacer(1, 5 * mm),
             Paragraph("Executive summary", styles["Heading2"]),
             Paragraph(self._executive_summary(rows, summary), styles["BodyText"]),
+            Spacer(1, 4 * mm),
+            Paragraph("Observed findings", styles["Heading2"]),
+            Paragraph(self._findings(summary), styles["BodyText"]),
             Spacer(1, 4 * mm),
         ]
         if summary:
@@ -223,5 +228,32 @@ scenario files, prompt versions, and raw JSON/CSV exports to inspect or repeat t
             f"The experiment recorded {len(rows)} runs across {len(summary)} model/configuration "
             f"groups. {successful} runs met both interpretation and route-validity criteria. Detailed "
             "rows, including failures, remain available in JSON and CSV exports."
+        )
+
+    @staticmethod
+    def _findings(summary: list[dict[str, Any]]) -> str:
+        if not summary:
+            return "No observed findings are available without stored model runs."
+        baseline = [item for item in summary if item["mode"] == "baseline"]
+        optimized = [item for item in summary if item["mode"] == "optimized"]
+        baseline_successes = sum(round(item["runs"] * item["success_rate"] / 100) for item in baseline)
+        optimized_successes = sum(
+            round(item["runs"] * item["success_rate"] / 100) for item in optimized
+        )
+        eligible = [item for item in optimized if item["mean_latency"] is not None]
+        fastest = min(eligible, key=lambda item: item["mean_latency"]) if eligible else None
+        fastest_text = (
+            f"The lowest observed optimized group mean was {fastest['mean_latency']:.2f} ms for "
+            f"{fastest['model']}. "
+            if fastest
+            else ""
+        )
+        cache_hits = sum(item["cache_hits"] for item in optimized)
+        return escape(
+            f"Within this experiment, baseline groups produced {baseline_successes} verified "
+            f"successes across {sum(item['runs'] for item in baseline)} runs, while optimized "
+            f"groups produced {optimized_successes} across {sum(item['runs'] for item in optimized)} "
+            f"runs. {fastest_text}Optimized groups recorded {cache_hits} cache hits in total. "
+            "These observations apply only to the recorded hardware, scenarios, and sample size."
         )
 

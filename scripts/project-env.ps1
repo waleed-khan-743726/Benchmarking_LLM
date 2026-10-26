@@ -5,6 +5,7 @@ $env:ROBOT_NAV_DATA_DIR = Join-Path $ProjectRoot 'backend\data'
 $env:ROBOT_NAV_RESULTS_DIR = Join-Path $ProjectRoot 'experiments\results'
 $env:ROBOT_NAV_REPORT_DIR = Join-Path $ProjectRoot 'reports\generated'
 $env:OLLAMA_MODELS = Join-Path $ProjectRoot 'models\ollama'
+$env:OLLAMA_NOHISTORY = '1'
 $env:PIP_CACHE_DIR = Join-Path $ProjectRoot '.cache\pip'
 $env:npm_config_cache = Join-Path $ProjectRoot '.cache\npm'
 $env:npm_config_prefix = Join-Path $ProjectRoot '.cache\npm-prefix'
@@ -35,5 +36,9 @@ foreach ($directory in $requiredDirectories) {
 $venvScripts = Join-Path $env:VIRTUAL_ENV 'Scripts'
 if (Test-Path $venvScripts) {
     $env:Path = "$venvScripts;$env:Path"
+}
+$ollamaBin = Join-Path $ProjectRoot 'tools\ollama'
+if (Test-Path $ollamaBin) {
+    $env:Path = "$ollamaBin;$env:Path"
 }
 

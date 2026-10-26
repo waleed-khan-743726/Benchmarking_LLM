@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from time import perf_counter
 from typing import Any
 
@@ -19,6 +20,7 @@ from .schemas import (
     InterpretationRequest,
     InterpretationResult,
     NavigationTask,
+    TaskCoordinate,
 )
 
 
@@ -47,6 +49,17 @@ class OllamaClient:
             ) from exc
         return response.json().get("models", [])
 
+    async def version(self) -> str:
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.get(f"{self.base_url}/api/version")
+                response.raise_for_status()
+        except (httpx.HTTPError, OSError) as exc:
+            raise OllamaUnavailableError(
+                "Ollama is not reachable on the configured local endpoint"
+            ) from exc
+        return str(response.json().get("version", "unknown"))
+
     async def health(self) -> bool:
         try:
             await self.list_models()
@@ -72,7 +85,7 @@ class OllamaClient:
             "format": NavigationTask.model_json_schema(),
             "stream": False,
             "think": False,
-            "options": {"temperature": 0, "seed": 42},
+            "options": {"temperature": 0, "seed": 42, "num_ctx": 2048},
             "keep_alive": "2m",
         }
         started = perf_counter()
@@ -90,6 +103,8 @@ class OllamaClient:
             task = NavigationTask.model_validate_json(content)
         except (ValidationError, json.JSONDecodeError) as exc:
             raise OllamaResponseError("The model returned invalid structured task data") from exc
+        if request.prompt_mode == "optimized":
+            task = self._normalize_explicit_signals(task, request.instruction)
 
         result = InterpretationResult(
             model=body.get("model", request.model),
@@ -122,6 +137,36 @@ class OllamaClient:
             sort_keys=True,
         )
         return hashlib.sha256(material.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _normalize_explicit_signals(task: NavigationTask, instruction: str) -> NavigationTask:
+        """Apply only signals explicitly present in the user's text.
+
+        This prevents small models from turning adjectives into avoid-area names and makes direct
+        optimization keywords deterministic without inventing map facts.
+        """
+        normalized = " ".join(instruction.lower().split())
+        coordinates = re.findall(r"\((-?\d+)\s*,\s*(-?\d+)\)", instruction)
+        if len(coordinates) >= 2:
+            task.start = TaskCoordinate(x=int(coordinates[0][0]), z=int(coordinates[0][1]))
+            task.goal = TaskCoordinate(x=int(coordinates[1][0]), z=int(coordinates[1][1]))
+        else:
+            task.start = None
+            task.goal = None
+        if "shortest" in normalized:
+            task.movement_preference = "shortest"
+        elif "safe" in normalized or "safely" in normalized:
+            task.movement_preference = "safe"
+        else:
+            task.movement_preference = "unspecified"
+        if "avoid" not in normalized:
+            task.avoid_areas = []
+        else:
+            cleaned_areas = [" ".join(area.replace("_", " ").split()) for area in task.avoid_areas]
+            task.avoid_areas = [area for area in cleaned_areas if area.lower() in normalized]
+        if any(token in normalized for token in ("replan", "if blocked", "obstacle appears")):
+            task.replan_on_obstacle = True
+        return task
 
     @staticmethod
     def _ns_to_ms(value: int | None) -> float | None:

@@ -52,9 +52,36 @@ export type ModelCandidate = {
 export type ModelStatus = {
   ollama_ready: boolean;
   endpoint: string;
+  ollama_version: string | null;
   offline_mode: boolean;
   candidates: ModelCandidate[];
   installed_models: Array<Record<string, unknown>>;
+};
+
+export type NavigationTask = {
+  objective: "navigate" | "unsupported";
+  start: Coordinate | null;
+  goal: Coordinate | null;
+  movement_preference: "shortest" | "safe" | "unspecified";
+  avoid_areas: string[];
+  replan_on_obstacle: boolean;
+  clarification_needed: boolean;
+  clarification_reason: string | null;
+};
+
+export type InterpretationResult = {
+  model: string;
+  prompt_version: string;
+  task: NavigationTask;
+  metrics: {
+    wall_time_ms: number;
+    total_duration_ms: number | null;
+    load_duration_ms: number | null;
+    prompt_tokens: number | null;
+    generated_tokens: number | null;
+    cache_hit: boolean;
+  };
+  raw_response: string;
 };
 
 export type Experiment = {

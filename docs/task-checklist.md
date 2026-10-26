@@ -13,5 +13,5 @@
 - [x] Implement the benchmark engine, exports, and reports.
 - [x] Run backend, frontend, automated, and deterministic end-to-end checks.
 - [x] Produce final storage/path audit and delivery summary.
-- [ ] Install Ollama and execute real multi-model benchmarks (blocked by missing runtime/models).
+- [x] Install Ollama on D:, verify three freely licensed model bundles, and execute the real 24-observation multi-model benchmark.
 

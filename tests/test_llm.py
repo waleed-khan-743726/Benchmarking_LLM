@@ -24,6 +24,8 @@ async def test_valid_structured_response_and_cache(monkeypatch: pytest.MonkeyPat
     content = json.dumps(
         {
             "objective": "navigate",
+            "start": None,
+            "goal": None,
             "movement_preference": "shortest",
             "avoid_areas": [],
             "replan_on_obstacle": True,

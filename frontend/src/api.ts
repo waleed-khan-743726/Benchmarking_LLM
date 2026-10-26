@@ -4,6 +4,7 @@ import type {
   Experiment,
   GridConfig,
   Health,
+  InterpretationResult,
   ModelStatus,
   Simulation
 } from "./types";
@@ -24,6 +25,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   health: () => request<Health>("/health"),
   models: () => request<ModelStatus>("/api/v1/models"),
+  interpret: (instruction: string, model: string) =>
+    request<InterpretationResult>("/api/v1/interpret", {
+      method: "POST",
+      body: JSON.stringify({ instruction, model, prompt_mode: "optimized", use_cache: true })
+    }),
   experiments: () => request<Experiment[]>("/api/v1/experiments"),
   startBenchmark: (models: string[], repetitions: number) =>
     request<BenchmarkJob>("/api/v1/benchmarks", {

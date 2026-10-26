@@ -6,6 +6,10 @@ frontend/*.tsbuildinfo
 .tmp/
 logs/*.log
 delivery/
+tools/ollama/
+.ollama-home/
+models/ollama/
+tmp/
 experiments/results/*
 !experiments/results/.gitkeep
 reports/generated/*

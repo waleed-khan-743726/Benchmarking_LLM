@@ -72,9 +72,11 @@ def health() -> HealthResponse:
 async def model_status() -> dict:
     try:
         installed_models = await ollama.list_models()
+        ollama_version = await ollama.version()
         ollama_ready = True
     except OllamaUnavailableError:
         installed_models = []
+        ollama_version = None
         ollama_ready = False
     installed_names = {item.get("name") for item in installed_models} | {
         item.get("model") for item in installed_models
@@ -82,6 +84,7 @@ async def model_status() -> dict:
     return {
         "ollama_ready": ollama_ready,
         "endpoint": settings.ollama_host,
+        "ollama_version": ollama_version,
         "offline_mode": settings.offline_mode,
         "candidates": [
             {**asdict(candidate), "installed": candidate.tag in installed_names}

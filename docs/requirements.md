@@ -28,14 +28,14 @@ Build a local, zero-inference-cost research application that demonstrates how an
 - Available D:-based Python: Miniconda Python 3.13.5.
 - Node.js 24.19.0 and npm 11.17.0 are installed on C: as existing system tools; local packages and npm cache are redirected to D:.
 - Git 2.53.0 is available through the Codex runtime on C:; repository content is on D:.
-- Ollama was not found on `PATH` during initial inspection. The simulator therefore starts in offline development mode until Ollama is installed and health-checked.
+- Ollama was not found on `PATH` during initial inspection. Standalone Ollama 0.40.11 was subsequently downloaded directly to D:, checksum-verified, installed under the project, and health-checked.
 
 ## Initial storage estimate
 
 - Source, documentation, results, and reports: under 1 GB for normal development.
 - Python environment and cache: approximately 0.5–1.5 GB.
 - Frontend dependencies, npm cache, and builds: approximately 0.5–1.5 GB.
-- Three small quantized Ollama models: approximately 3–8 GB depending on selected tags.
+- Three selected quantized Ollama model payloads: approximately 2.02 GB total for the exact installed tags.
 - Recommended safety reserve before model pulls: at least 20 GB free on D:.
 
 ## Key risks

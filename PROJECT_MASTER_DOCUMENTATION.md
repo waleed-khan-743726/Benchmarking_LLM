@@ -64,7 +64,7 @@ How effectively can freely usable, locally runnable open-weight language models 
 
 ### Current acceptance summary
 
-The complete checklist is tracked in `docs/acceptance-criteria.md`. As of this update, project storage, the D:-based Python environment, static checks, deterministic A*, route validation, and the first safe-replanning behavior are verified.
+The complete checklist is tracked in `docs/acceptance-criteria.md`. All release criteria are verified: D:-scoped storage, the local runtime and three models, structured interpretation, deterministic A*, route validation and safe replanning, the interactive 3D client, persistent benchmarking, evidence exports, automated checks, and browser acceptance.
 
 ## 3. Environment and D: storage policy
 
@@ -79,7 +79,7 @@ The complete checklist is tracked in `docs/acceptance-criteria.md`. As of this u
 | Project venv | `D:\Robot_Navigation_FYP\.venv`, Python 3.13.5, pip 25.1.1 | VERIFIED |
 | Node / npm | Node 24.19.0; npm 11.17.0 (existing tools on C:) | VERIFIED |
 | Git | 2.53.0.windows.3 (existing Codex runtime on C:) | VERIFIED |
-| Ollama | No executable found on `PATH` | VERIFIED |
+| Ollama | Standalone 0.40.11 at `tools\ollama\ollama.exe` | VERIFIED |
 | Operating system | Windows 10 Home 64-bit, 10.0.19045 | VERIFIED |
 | Processor | Intel Core i5-6200U @ 2.30 GHz, 2 cores / 4 logical processors | VERIFIED |
 | Memory | 7.86 GB total; 1.36 GB free during final audit | VERIFIED point-in-time |
@@ -90,7 +90,7 @@ The complete checklist is tracked in `docs/acceptance-criteria.md`. As of this u
 - Source, evidence, logs, and normal reports: less than 1 GB.
 - Python environment/cache: about 0.5–1.5 GB.
 - Frontend dependencies/cache/builds: about 0.5–1.5 GB.
-- Three small quantized Ollama models: approximately 3–8 GB, subject to verified tags.
+- Three selected quantized Ollama models: approximately 2.02 GB total model payload.
 - Model pulls require a safety margin; the application will refuse a pull without the model estimate plus at least 5 GB free.
 
 ### Project-scoped redirection
@@ -107,6 +107,7 @@ The complete checklist is tracked in `docs/acceptance-criteria.md`. As of this u
 | `TEMP`, `TMP` | `.tmp` |
 | `PYTHONPYCACHEPREFIX` | `.cache\pycache` |
 | `OLLAMA_MODELS` | `models\ollama` |
+| `OLLAMA_NOHISTORY` | `1` (interactive history disabled) |
 | result/report/data variables | project result, report, and data directories |
 
 This script does not alter machine-wide environment variables. It must be dot-sourced before setup, launch, model pull, benchmark, and build commands:
@@ -116,7 +117,7 @@ Set-Location D:\Robot_Navigation_FYP
 . .\scripts\project-env.ps1
 ```
 
-Existing Node and Git executables reside on C: because they were already installed system/runtime components. They are used only as executables; project packages, caches, and outputs are redirected to D:. Ollama installation has not been attempted. If its runtime cannot safely be installed on D:, that exact unavoidable usage will be documented before installation, while model storage will remain on D: through `OLLAMA_MODELS`.
+Existing Node and Git executables reside on C: because they were already installed system/runtime components. They are used only as executables; project packages, caches, and outputs are redirected to D:. Ollama's verified standalone archive was downloaded directly to the D: cache and extracted to `tools\ollama`. Ollama has no supported `OLLAMA_HOME` setting and requires `%USERPROFILE%\.ollama` for identity metadata, so that path is a Windows junction whose actual target is `D:\Robot_Navigation_FYP\.ollama-home`. The junction itself is the only project-created C: filesystem entry; its files reside on D:.
 
 ## 4. Architecture
 
@@ -181,13 +182,15 @@ D:\Robot_Navigation_FYP\
 |   |-- api\                       typed request/response schemas and session registry
 |   |-- config.py                  D:-based runtime settings
 |   `-- main.py                    FastAPI routes and middleware
-|-- frontend\                      React/TypeScript/3D client (pending)
+|-- frontend\                      verified React/TypeScript/3D client
 |-- tests\                         automated deterministic tests
 |-- experiments\
 |   |-- scenarios\                 versioned reproducible scenario definitions
 |   `-- results\                   raw benchmark evidence
 |-- models\ollama\                 required Ollama model-storage target
-|-- reports\                       generated report output
+|-- tools\ollama\                  D:-local standalone Ollama runtime
+|-- .ollama-home\                  D:-backed Ollama identity/cache target
+|-- reports\                       generated and visually checked reports
 |-- logs\                          project logs
 |-- scripts\project-env.ps1        session-scoped D: storage configuration
 |-- docs\                          concise supporting requirement/design views
@@ -238,7 +241,7 @@ The current source is **VERIFIED** by Ruff and 13 automated tests. The measured 
 
 ## 9. LLM integration
 
-Status: **IMPLEMENTED AND MOCK-VERIFIED; LIVE RUNTIME UNAVAILABLE**. Ollama is not detected and no model has been downloaded.
+Status: **IMPLEMENTED AND LIVE-VERIFIED**. Ollama 0.40.11 runs from the project-local D: runtime and the selected models are stored beneath the configured D: model directory.
 
 `backend/llm/client.py` calls the local `POST /api/chat` endpoint with `stream=false`, `temperature=0`, seed 42, a Pydantic JSON schema in `format`, and a short keep-alive. It records wall, total, load, prompt-token, and generated-token observations when returned by Ollama. The result is validated through `NavigationTask`; malformed output raises a distinct response error. Local transport failures become an explicit 503 at the API boundary.
 
@@ -246,15 +249,15 @@ Status: **IMPLEMENTED AND MOCK-VERIFIED; LIVE RUNTIME UNAVAILABLE**. Ollama is n
 
 The current Ollama documentation was checked on 2026-10-26. It confirms that `/api/chat` accepts a JSON schema as `format`, recommends Pydantic schema validation and temperature 0, and reports total/load/evaluation timing and token counts. `/api/tags` returns installed-model names, sizes, digests, parameter size, and quantization. Sources: `https://docs.ollama.com/capabilities/structured-outputs`, `https://docs.ollama.com/api/chat`, and `https://docs.ollama.com/api/tags`.
 
-### Verified candidate catalogue (not installed)
+### Verified installed model catalogue
 
 | Tag | Official listed size/context | Why selected | Readiness |
 |---|---:|---|---|
-| `qwen3:0.6b` | 523 MB / 40K | Smallest candidate; useful low-resource baseline | Not installed |
-| `gemma3:1b` | 806 MB / 32K | Compact text model designed for resource-limited devices | Not installed; needs Ollama 0.6+ |
-| `smollm2:1.7b-instruct-q4_K_M` | about 1.1 GB / 8K | Explicit instruction-tuned Q4 variant | Not installed |
+| `qwen2.5:0.5b` | 397 MB / 32K | Small structured-output baseline | Installed; Apache License 2.0 |
+| `qwen3:0.6b` | 522 MB / 40K | Newer compact Qwen comparison | Installed; Apache License 2.0 |
+| `smollm2:1.7b-instruct-q4_K_M` | about 1.1 GB / 8K | Explicit instruction-tuned Q4 variant | Installed; Apache License 2.0 |
 
-Official model pages were inspected at `ollama.com/library/qwen3`, `ollama.com/library/gemma3`, and `ollama.com/library/smollm2/tags`. Licence summaries in the catalogue are advisory; exact bundled metadata will be recorded after each real pull. A model is shown as installed only when its exact tag appears in `/api/tags`, and it will not be called benchmark-ready until a real structured inference succeeds.
+Official model pages were inspected at `ollama.com/library/qwen2.5:0.5b`, `ollama.com/library/qwen3:0.6b`, and `ollama.com/library/smollm2:1.7b-instruct-q4_K_M`. The exact pulled bundles are checked with `ollama show --license`; all three selected model pages declare Apache License 2.0. A model is shown as installed only when its exact tag appears in `/api/tags`, and it is not called benchmark-ready until a real structured inference succeeds.
 
 ## 9A. Backend API implementation
 
@@ -271,30 +274,30 @@ Official model pages were inspected at `ollama.com/library/qwen3`, `ollama.com/l
 
 ## 10. Benchmarking, optimization, persistence, and reporting
 
-Status: **IMPLEMENTED AND AUTOMATED-TESTED; REAL MODEL EXPERIMENT PENDING**.
+Status: **IMPLEMENTED, LIVE-BENCHMARKED, AND VERIFIED**.
 
 - Baseline: documented full prompt, no response cache, ordinary validation, one eligible inference per task.
 - Optimized: shorter prompt, deterministic normalization, schema-aware parsing, cache keyed by normalized input + model + prompt version + relevant map/task inputs, and avoided redundant inference.
 - Models run sequentially; cold/warm behavior is labelled.
 - Every failure remains in raw results and denominators.
 - SQLite stores metadata; JSON and CSV preserve portable evidence.
-- HTML/PDF reports use stored evidence only. With no completed benchmark, reports say “no results yet.”
+- HTML/PDF reports use stored evidence only. The release report is generated from the completed 24-observation experiment.
 
 `backend/storage/models.py` defines experiments and benchmark-result rows. `ExperimentRepository` creates, completes, lists, retrieves, and exports them through `backend/data/experiments.db`. Each observation can store model and prompt version, scenario and repetition, interpretation/route/success flags, wall and Ollama durations, token counts, cache hit, route metrics, memory observation, raw response, and failure reason.
 
 `backend/benchmarking/runner.py` iterates models, prompt modes, scenarios, and repetitions strictly sequentially. Each item performs a structured interpretation, compares it with scenario expectations, runs A*, validates the route, records memory and timing, and persists either the evidence or the exact failure. `manager.py` runs the experiment in a background asyncio task while `/api/v1/benchmarks/jobs/{id}` exposes status. Two versioned scenarios currently live under `experiments/scenarios/`.
 
-`backend/reporting/generator.py` builds self-contained HTML and A4 PDF reports from repository records. Summary success rate keeps failures in the denominator; latency ignores missing observations rather than treating them as zero. JSON and UTF-8 CSV provide raw inspection. The PDF was rendered through Poppler and visually checked; the one-page no-results template has clear margins, headings, and no clipping or overlap.
+`backend/reporting/generator.py` builds self-contained HTML and A4 PDF reports from repository records. Summary success rate keeps failures in the denominator; latency ignores missing observations rather than treating them as zero. JSON and UTF-8 CSV provide raw inspection. Experiment `ad5f9bb6-bb44-43af-8926-847361f5ab62` contains 24 observations: three models, two prompt modes, two scenarios, and two repetitions. Every optimized group achieved 4/4 verified task matches and every baseline group achieved 0/4; all 24 routes were independently valid. Mean wall latency, including the two validated cache hits recorded as 0 ms in each optimized group, was 7,228 ms for Qwen2.5 optimized, 5,711 ms for Qwen3 optimized, and 14,738 ms for SmolLM2 optimized. Corresponding uncached baseline means were 24,162 ms, 21,694 ms, and 38,043 ms. The baseline failures are preserved raw and reflect invented coordinates/areas, wrong preferences, or unnecessary clarification rather than route-planning failures. This is a small two-scenario study and is not a general model ranking. The final one-page PDF was rendered through Poppler and visually checked with no clipping or overlap.
 
 ## 11. User interface and 3D simulator
 
-Status: **CORE SIMULATOR VERIFIED; RESEARCH SECTIONS PARTIAL**.
+Status: **FULL WORKFLOW VERIFIED IN A LIVE BROWSER**.
 
 The React client is under `frontend/`. `App.tsx` owns the editable start, goal, obstacle set, API session, playback speed, runtime status, errors, and navigation shell. `components/Arena3D.tsx` renders the tiled grid, lightweight block obstacles, route markers, goal ring, and robot. `api.ts` is the only HTTP boundary. `types.ts` mirrors authoritative API state.
 
-The desktop information architecture contains Overview, 3D Simulator, Model Laboratory, Benchmark Studio, Results & Analysis, Research Report, and Settings & Help. The non-simulator screens currently state that no verified evidence exists and route the user back to the simulator; they do not show fake widgets or results.
+The desktop information architecture contains Overview, 3D Simulator, Model Laboratory, Benchmark Studio, Results & Analysis, Research Report, and Settings & Help. Mission Control exposes an installed-model selector and real inference latency/token/intent data. The research screens show runtime/model readiness, launch sequential benchmarks, render six evidence-derived aggregate cards plus experiment history, and create JSON, CSV, HTML, and PDF exports from SQLite records.
 
-Verified controls: orbit/zoom, obstacle/start/goal editing modes, route calculation, play, pause, single step, reset, speed, status, robot position, path progress, replan count, and recent system event. The browser test rendered a 14 × 10 arena, advanced the route, paused, moved exactly one step, inserted obstacles through WebGL tile clicks, and triggered one safe replan when the next cell was blocked. The robot remained at `(9,3)` for the replan tick and received a replacement eight-step route. Visual evidence is stored at `reports/ui-verification.png`.
+Verified controls: orbit/zoom, obstacle/start/goal editing modes, route calculation, play, pause, single step, reset, speed, status, robot position, path progress, replan count, recent system event, and switching among the three installed LLMs. Browser acceptance rendered a 14 × 10 arena; earlier interaction advanced, paused, stepped, edited tiles, and safely replanned. Final acceptance selected `qwen3:0.6b`, performed a real 29,540 ms interpretation, displayed 204 input / 63 output tokens and the parsed shortest/replan intent, then produced a valid 18-move A* route. Results displayed all six observed model/prompt groups; Report displayed 24 raw observations; Model Laboratory displayed three installed Apache-2.0 models.
 
 ## 12. Setup, run, test, and stop instructions
 
@@ -348,7 +351,13 @@ Get-Content .\logs\backend.err.log
 Get-Content .\logs\frontend.err.log
 ```
 
-If Ollama is absent, remain in offline mode. After installing a compatible runtime, pull only one approved model at a time:
+The bundled standalone runtime and approved models are already installed. To repair or reproduce the runtime installation on D:, run:
+
+```powershell
+.\scripts\install-ollama.ps1
+```
+
+To add or repair an approved model, pull only one tag at a time:
 
 ```powershell
 .\scripts\pull-model.ps1 -Model 'qwen3:0.6b'
@@ -358,14 +367,12 @@ That script refuses unknown tags, checks estimated size plus a 5 GB D: safety ma
 
 ## 13. How to modify or extend the system
 
-This section will grow with implementation. At present:
+Extension rules for the completed release:
 
 - Change grid dimension policy in `GridMap.min_size` / `max_size` in `backend/planning/grid.py`, then update boundary tests.
 - Change movement rules only by updating `GridMap.neighbours`, the heuristic/cost model, the validator transition rule, methodology, and tests together.
 - Add planner statistics through `PlanResult` in `backend/planning/models.py`; do not compute authoritative planner metrics in the UI.
 - Add simulation actions through `SimulationEngine`; visual animation must remain a consumer of snapshots rather than a source of logical position.
-
-Model, scenario, prompt, benchmark, and UI extension instructions will be added when those modules actually exist.
 
 - **Add a model:** add one `ModelCandidate` in `backend/llm/catalog.py`, add it to the `ValidateSet` and size map in `scripts/pull-model.ps1`, verify the official tag/licence/size, pull it, run a structured readiness inference, then include it in experiments.
 - **Add a scenario:** create a JSON file matching `BenchmarkScenario` under `experiments/scenarios/`; give it a unique versioned ID, fixed map/start/goal, instruction, and expected structured task. Run tests before benchmarking.
@@ -397,20 +404,23 @@ Model, scenario, prompt, benchmark, and UI extension instructions will be added 
 - Overview, Model Laboratory, Benchmark Studio, Results, Research Report, and Settings screens connected to live API state and browser-checked.
 - Windows setup/run/stop/health/model-pull scripts parse successfully.
 - Final D: audit verified venv, site-packages, pip/npm caches, temp, reports, and Ollama model target.
+- Standalone Ollama 0.40.11 archive downloaded directly to D:, verified against the official SHA-256, extracted under `tools\ollama`, and started with project-scoped environment variables.
+- Three selected models installed on D:, licence output checked, and structured readiness inference completed.
+- Live 24-observation baseline/optimized benchmark completed and persisted; raw JSON/CSV and evidence-based HTML/PDF reports generated.
+- Frontend model switching, live inference metrics, aggregate analytics, history, report exports, and model cards verified in the browser.
 
 ### In progress
 
-- Delivery archive and final Git snapshot.
+- None for the requested release.
 
-### Pending because external runtime/models are absent
+### Optional future research
 
-- Install Ollama without violating the D:-storage policy, pull candidates sequentially, and run readiness inference.
-- Execute real multi-model baseline/optimized benchmarks and derive evidence-supported findings/charts.
 - Measure sustained browser FPS and perform before/after optimization on this laptop.
+- Expand the scenario set and repetitions before making broad claims about model quality.
 
 ### Blocked
 
-- Real LLM benchmarking is blocked by missing Ollama runtime and model files. The application, offline simulator, deterministic tests, mock-verified LLM contract, storage, export, and reporting remain usable.
+- None.
 
 ## 15. Chronological development log
 
@@ -480,7 +490,7 @@ Model, scenario, prompt, benchmark, and UI extension instructions will be added 
 - **Files created/modified:** `backend/llm/*`, backend settings/routes, and `tests/test_llm.py`.
 - **First check:** the expanded suite passed 23 tests, but Ruff found six formatting issues. These were corrected and Ruff then passed.
 - **Automated result:** 23 tests passed; measured backend coverage was 90%. LLM tests use controlled HTTP mocks and therefore do not claim a real local inference.
-- **Runtime reality:** Ollama remains unavailable and no candidate is installed, downloaded, or benchmarked.
+- **Runtime state at that milestone:** Ollama was not yet present; later milestones below record the verified installation and live runs.
 
 ### 2026-10-26 — Persistence, benchmarking, and reporting
 
@@ -492,8 +502,8 @@ Model, scenario, prompt, benchmark, and UI extension instructions will be added 
 ### 2026-10-26 — Research UI and safety gating
 
 - **Files modified:** typed frontend API/models plus `ResearchSections.tsx` and research-screen styling.
-- **Behavior:** Overview shows live backend/storage/evidence counts; Model Laboratory shows three verified candidates and actual readiness; Benchmark Studio disables execution when Ollama is unavailable; Results shows stored history; Report creates exports from history; Settings displays exact paths.
-- **Browser verification:** Model Laboratory visibly showed Ollama unavailable and all three candidates as not installed. Benchmark Studio showed three model checkboxes and its run button was disabled, preventing a misleading benchmark.
+- **Behavior:** Overview shows live backend/storage/evidence counts; Model Laboratory shows three verified candidates and actual readiness; Benchmark Studio runs only installed models; Results shows stored history; Report creates exports from history; Settings displays exact paths.
+- **Browser verification at that milestone:** offline and not-installed states were correctly represented before runtime installation; final live-state verification is recorded below.
 - **Build:** TypeScript passed; Vite production build succeeded. Vite warned that the main minified JS chunk is about 1.15 MB (322 KB gzip), so route-level code splitting remains a documented optimization.
 
 ### 2026-10-26 — Windows delivery and final storage audit
@@ -505,16 +515,34 @@ Model, scenario, prompt, benchmark, and UI extension instructions will be added 
 - **Path evidence:** Python executable/prefix/site-packages, pip cache, npm cache, temp, generated reports, and Ollama model path all resolved under `D:\Robot_Navigation_FYP`. D: had 404.69 GB free.
 - **Reports:** `reports/generated/no-results-report.html` and `.pdf` created. Poppler confirmed one unencrypted A4 PDF page, and PNG inspection found no clipping, overlap, or legibility issue. Poppler printed a non-visual Symbol-font diagnostic; the rendered page was intact.
 
+### 2026-10-26 — D:-local Ollama runtime and model installation
+
+- **Space gate:** D: free space was checked before runtime and model downloads and remained hundreds of gigabytes above the estimates.
+- **Runtime:** the official Windows AMD64 Ollama 0.40.11 archive was downloaded directly to `.cache\downloads`; SHA-256 `bda4a493ba8a7c24d57263cd843cd68cee84f44aed4299eeed532acad7eda12a` matched the official release asset; the runtime was extracted to `tools\ollama`.
+- **User-profile requirement:** `%USERPROFILE%\.ollama` is a Windows junction targeting `D:\Robot_Navigation_FYP\.ollama-home`; key/cache files therefore reside on D:. No system-wide environment variable was changed.
+- **Models:** installed `qwen2.5:0.5b` (397 MB, ID `a8b0c5157701`), `qwen3:0.6b` (522 MB, ID `7df6b6e09427`), and `smollm2:1.7b-instruct-q4_K_M` (about 1.1 GB, ID `8ea75f835db9`). `ollama show --license` reported Apache License 2.0 for each exact installed bundle.
+- **Readiness:** all three returned schema-valid structured output. Raw responses remain stored; deterministic normalization removes coordinates or avoidance areas not explicitly present in the instruction before the task is used.
+
+### 2026-10-26 — Live benchmark, report, and final browser acceptance
+
+- **Experiment:** `ad5f9bb6-bb44-43af-8926-847361f5ab62`, 24 stored observations across three models, two prompt modes, two scenarios, and two repetitions.
+- **Observed task-match result:** baseline 0/4 and optimized 4/4 for each model. Every route was valid. Failures were preserved rather than hidden; the two optimized repeat calls per model were cache hits.
+- **Observed optimized mean wall time:** Qwen2.5 7,228 ms; Qwen3 5,711 ms; SmolLM2 14,738 ms. These means include validated cache hits recorded as 0 ms and must not be read as uncached generation speed.
+- **Artifacts:** raw JSON/CSV plus self-contained HTML and one-page A4 PDF generated from SQLite. The final PDF was text-checked and rendered through Poppler; full-page and detail inspection found no overlap or clipping.
+- **Browser acceptance:** the live UI showed backend ready, Ollama 0.40.11, three installed models, working model switching, real qwen3 inference metrics, deterministic route output, six aggregate evidence cards, 24-run history, export controls, and exact model/licence cards.
+- **Quality gates:** Ruff passed; 28 tests passed with one third-party deprecation warning; TypeScript passed; Vite production build passed with the documented chunk-size warning.
+
 ## 16. Known limitations and honest caveats
 
-- Ollama is not installed/detected. No model is installed, readiness-tested, or benchmarked, so the application contains no model ranking or research finding.
-- Real performance optimization claims require completed equivalent baseline/optimized model runs; only deterministic planning examples (roughly sub-millisecond in the verified browser scenario) have been observed.
+- The completed benchmark has only two scenarios and two repetitions per model/prompt group. It supports the reported observations for this configuration, not a general model-quality ranking.
+- Optimized group mean wall times include two validated cache hits recorded as 0 ms. Use the raw observations when comparing uncached generation latency.
+- Baseline schema parses can still be semantically wrong; this is why task-match validation, deterministic normalization, raw-response retention, and A* route validation remain separate controls.
 - Automated coverage is 87% across the current backend; background-job API branches and some failure/control branches need more tests.
 - Frontend verification is browser-driven rather than a committed Playwright/Vitest suite.
 - Simulation sessions are in-memory and reset on backend restart; experiment history is persistent in SQLite.
 - The Vite build reports a large main chunk (about 1.15 MB / 322 KB gzip). Lazy-loaded research sections are a sensible future optimization.
 - The application uses a remote Google Fonts CSS import when network is available; system fonts provide a readable fallback offline.
-- Existing Node and Git executables are on C: as preinstalled/runtime components. The Codex runtime and the supplied attachments also live on C: outside project control. All intentionally created project dependencies, caches, temp data, source, results, models target, reports, and logs are on D:.
+- Existing Node and Git executables are on C: as preinstalled/runtime components. The Codex runtime and supplied attachments also live on C: outside project control. The only project-created C: entry is the `%USERPROFILE%\.ollama` junction; its target and contents are on D:. All intentionally created project dependencies, caches, temp data, source, result data, model payloads, reports, and logs are on D:.
 - The known Starlette `TestClient` deprecation warning is from the installed FastAPI/Starlette test helper and does not affect the running API.
 
 ## 17. Final delivery record
@@ -525,21 +553,23 @@ Model, scenario, prompt, benchmark, and UI extension instructions will be added 
 - Interactive 3D grid, editable start/goal/obstacles, A* route, robot playback, safe dynamic replanning, and plain-language state messages.
 - Strict local-Ollama adapter, model catalogue/readiness endpoint, versioned prompts, schema validation, failure recovery, and prompt-versioned cache.
 - Background sequential benchmark engine, versioned scenarios, SQLite evidence, JSON/CSV export, and HTML/PDF report generation.
-- Professional research navigation and truthful empty/unavailable states.
+- Professional research navigation, live model switching, factual analytics, and truthful unavailable/error states.
 - D:-scoped setup, cache, temp, model, launch, shutdown, health, and model-pull workflow.
 - 28 passing backend tests, Ruff pass, TypeScript pass, Vite production build, PowerShell syntax pass, HTTP health checks, and real browser interaction verification.
 
 ### Verified output artifacts
 
 - `reports/ui-verification.png`: desktop simulator after browser-level verification.
-- `reports/generated/no-results-report.html`: offline self-contained report template.
-- `reports/generated/no-results-report.pdf`: visually inspected A4 report template.
+- `experiments/results/ad5f9bb6-bb44-43af-8926-847361f5ab62/results.json`: raw live observations.
+- `experiments/results/ad5f9bb6-bb44-43af-8926-847361f5ab62/results.csv`: tabular live observations.
+- `reports/generated/ad5f9bb6-bb44-43af-8926-847361f5ab62/research-report.html`: evidence report.
+- `reports/generated/ad5f9bb6-bb44-43af-8926-847361f5ab62/research-report.pdf`: visually inspected A4 evidence report.
 - `frontend/dist/`: production frontend build.
-- `delivery/Robot_Navigation_FYP_source.zip`: source delivery including documentation, scenarios, production build, and verified reports; excludes venv, caches, temp, node_modules, Git internals, logs, database runtime state, and model files.
+- `delivery/Robot_Navigation_FYP_source.zip`: source delivery including documentation, scenarios, production build, SQLite evidence, raw results, and verified reports; excludes venv, caches, temp, node_modules, Git internals, logs, runtime binaries, identity metadata, and model payloads.
 
 ### Final readiness boundary
 
-The deterministic research platform is delivered and verified. The dissertation's empirical model-comparison stage is not complete because Ollama/models are absent. The UI and documentation state this explicitly. After installing Ollama, use the guarded pull script, verify each model in Model Laboratory, then run the same scenarios/configurations to populate real findings.
+The requested local research platform is delivered and verified end to end. Ollama and three freely licensed model bundles are installed on D:, real model switching and interpretation work in the frontend, deterministic A* remains authoritative, and the included benchmark/report artifacts contain observed data rather than assumptions. The small experiment is deliberately reported with its scope and cache caveats.
 
-The final local Git history is on branch `main`. The delivery archive was enumerated after creation: 124 entries, 1.59 MB compressed, and zero entries matching the excluded dependency/cache/runtime directories.
+The final local Git history is on branch `main`. The delivery archive is regenerated and audited after the final checks; its exact entry count, size, and SHA-256 are recorded with the delivery artifact.
 

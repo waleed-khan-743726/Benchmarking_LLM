@@ -12,13 +12,13 @@ class TaskCoordinate(BaseModel):
 
 class NavigationTask(BaseModel):
     objective: Literal["navigate", "unsupported"]
-    start: TaskCoordinate | None = None
-    goal: TaskCoordinate | None = None
-    movement_preference: Literal["shortest", "safe", "unspecified"] = "unspecified"
-    avoid_areas: list[str] = Field(default_factory=list, max_length=20)
-    replan_on_obstacle: bool = True
-    clarification_needed: bool = False
-    clarification_reason: str | None = Field(default=None, max_length=300)
+    start: TaskCoordinate | None
+    goal: TaskCoordinate | None
+    movement_preference: Literal["shortest", "safe", "unspecified"]
+    avoid_areas: list[str] = Field(max_length=20)
+    replan_on_obstacle: bool
+    clarification_needed: bool
+    clarification_reason: str | None = Field(max_length=300)
 
     @model_validator(mode="after")
     def clarification_has_reason(self) -> NavigationTask:

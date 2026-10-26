@@ -48,8 +48,13 @@ class FakeOllama:
             prompt_version="test-v1",
             task=NavigationTask(
                 objective="navigate",
+                start=None,
+                goal=None,
                 movement_preference="shortest",
+                avoid_areas=[],
                 replan_on_obstacle=True,
+                clarification_needed=False,
+                clarification_reason=None,
             ),
             metrics=InterpretationMetrics(wall_time_ms=3.0),
             raw_response='{"objective":"navigate"}',

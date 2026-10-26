@@ -1,0 +1,363 @@
+﻿id,experiment_id,model,prompt_mode,prompt_version,scenario_id,repetition,success,interpretation_correct,route_valid,wall_time_ms,total_duration_ms,load_duration_ms,prompt_tokens,generated_tokens,cache_hit,path_length,expanded_nodes,planning_time_ms,peak_memory_mb,failure_reason,raw_response,created_at
+1,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,baseline,navigation-task-baseline-v1,basic-shortest-v1,1,False,False,True,38978.92349999165,34586.197,16759.2035,148,129,False,18,90,3.0394999776035547,70.30078125,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""area1"", ""area2""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""The user wants to move to the destination using the shortest safe route and replan if it becomes blocked.""
+}",2026-10-26 15:24:55.797572
+2,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,baseline,navigation-task-baseline-v1,basic-shortest-v1,2,False,False,True,20903.15799997188,18357.1167,59.1457,148,162,False,18,90,2.6008999557234347,70.55078125,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""area1"", ""area2""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""The user wants to move to the destination using the shortest safe route and replan if it becomes blocked. The movement preference is 'shortest', the avoidance areas are 'area1' and 'area2', and the replanning after obstacles is 'true'.""
+}",2026-10-26 15:25:17.522443
+3,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,baseline,navigation-task-baseline-v1,restricted-area-v1,1,False,False,True,19240.674300002865,14483.1538,44.9518,150,126,False,18,95,2.7115000411868095,71.16796875,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""central_corridor""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""The user wants to navigate safely, avoid the central corridor, and replan if an obstacle appears.""
+}",2026-10-26 15:25:37.124190
+4,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,baseline,navigation-task-baseline-v1,restricted-area-v1,2,False,False,True,17526.932000007946,14442.9908,93.413,150,126,False,18,95,2.84909998299554,71.9375,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""central_corridor""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""The user wants to navigate safely, avoid the central corridor, and replan if an obstacle appears.""
+}",2026-10-26 15:25:54.969907
+5,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,optimized,navigation-task-compact-v2,basic-shortest-v1,1,True,True,True,15096.111099992413,10208.1095,153.0754,195,67,False,18,90,2.8583999956026673,72.7890625,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""safe"",
+  ""avoid_areas"": [""safe"", ""safe""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:26:10.517009
+6,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,optimized,navigation-task-compact-v2,basic-shortest-v1,2,True,True,True,0.0,10208.1095,153.0754,195,67,True,18,90,2.0667999633587897,72.7890625,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""safe"",
+  ""avoid_areas"": [""safe"", ""safe""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:26:11.039616
+7,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,optimized,navigation-task-compact-v2,restricted-area-v1,1,True,True,True,13815.917800005991,8198.6116,103.8555,197,70,False,18,95,3.3924999879673123,73.4921875,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""safe"",
+  ""avoid_areas"": [
+    ""central_corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:26:25.179433
+8,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen2.5:0.5b,optimized,navigation-task-compact-v2,restricted-area-v1,2,True,True,True,0.0,8198.6116,103.8555,197,70,True,18,95,5.88790001347661,73.49609375,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""safe"",
+  ""avoid_areas"": [
+    ""central_corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:26:25.572592
+9,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,baseline,navigation-task-baseline-v1,basic-shortest-v1,1,False,False,True,34010.03499998478,30074.5426,15210.322,156,115,False,18,90,2.780199982225895,74.2734375,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 5,
+    ""z"": 5
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""blocked""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""The user specified to use the shortest safe route and replan if it becomes blocked.""
+}",2026-10-26 15:27:00.117755
+10,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,baseline,navigation-task-baseline-v1,basic-shortest-v1,2,False,False,True,19274.279599951115,13351.7063,41.472,156,115,False,18,90,2.538600005209446,74.2734375,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 5,
+    ""z"": 5
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""blocked""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""The user specified to use the shortest safe route and replan if it becomes blocked.""
+}",2026-10-26 15:27:19.642620
+11,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,baseline,navigation-task-baseline-v1,restricted-area-v1,1,False,False,True,17680.983400030527,13223.7561,55.2493,158,111,False,18,95,3.045500023290515,72.484375,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 1,
+    ""z"": 2
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""central corridor""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""No ambiguity or missing information beyond the current map defaults.""
+}",2026-10-26 15:27:37.656887
+12,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,baseline,navigation-task-baseline-v1,restricted-area-v1,2,False,False,True,15811.013899976388,13357.1496,63.8231,158,111,False,18,95,2.8548999689519405,72.6875,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 1,
+    ""z"": 2
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [""central corridor""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""no information needed beyond the current map defaults""
+}",2026-10-26 15:27:53.731881
+13,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,optimized,navigation-task-compact-v2,basic-shortest-v1,1,True,True,True,12080.716600001324,8992.4964,163.6649,203,63,False,18,90,3.590499982237816,73.171875,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:28:06.112707
+14,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,optimized,navigation-task-compact-v2,basic-shortest-v1,2,True,True,True,0.0,8992.4964,163.6649,203,63,True,18,90,3.9769000140950084,73.171875,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:28:06.387437
+15,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,optimized,navigation-task-compact-v2,restricted-area-v1,1,True,True,True,10762.559499999043,7574.3384,58.7329,205,65,False,18,95,3.986900032032281,73.83203125,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""safe"",
+  ""avoid_areas"": [""central corridor""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:28:17.411951
+16,ad5f9bb6-bb44-43af-8926-847361f5ab62,qwen3:0.6b,optimized,navigation-task-compact-v2,restricted-area-v1,2,True,True,True,0.0,7574.3384,58.7329,205,65,True,18,95,2.9434000025503337,73.83203125,,"{
+  ""objective"": ""navigate"",
+  ""start"": null,
+  ""goal"": null,
+  ""movement_preference"": ""safe"",
+  ""avoid_areas"": [""central corridor""],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:28:17.641119
+17,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,baseline,navigation-task-baseline-v1,basic-shortest-v1,1,False,False,True,60795.41700001573,57466.0852,32649.8063,155,119,False,18,90,4.2554999818094075,73.921875,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 1,
+    ""z"": 1
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""wall"",
+    ""hazard""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""unspecified""
+}",2026-10-26 15:29:18.722908
+18,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,baseline,navigation-task-baseline-v1,basic-shortest-v1,2,False,False,True,33584.810800035484,21272.7427,313.216,155,120,False,18,90,2.8796999831683934,74.69921875,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 1,
+    ""z"": 1
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""wall"",
+    ""corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": ""unspecified""
+}",2026-10-26 15:29:52.987051
+19,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,baseline,navigation-task-baseline-v1,restricted-area-v1,1,False,False,True,32638.434100023005,22559.7045,64.4095,158,123,False,18,95,2.6722000329755247,75.64453125,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""central_corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": true,
+  ""clarification_reason"": ""user wants to avoid the central corridor""
+}",2026-10-26 15:30:26.080030
+20,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,baseline,navigation-task-baseline-v1,restricted-area-v1,2,False,False,True,25153.264999971725,21122.1874,43.364,158,122,False,18,95,2.7766000130213797,76.1796875,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 10,
+    ""z"": 10
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""central_corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": true,
+  ""clarification_reason"": ""user did not specify the route""
+}",2026-10-26 15:30:51.636894
+21,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,optimized,navigation-task-compact-v2,basic-shortest-v1,1,True,True,True,30183.611200016458,25835.5597,87.2301,217,118,False,18,90,2.701300021726638,77.05859375,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""wall"",
+    ""floor"",
+    ""ceiling""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:31:22.085761
+22,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,optimized,navigation-task-compact-v2,basic-shortest-v1,2,True,True,True,0.0,25835.5597,87.2301,217,118,True,18,90,13.958499999716878,77.0625,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""wall"",
+    ""floor"",
+    ""ceiling""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:31:22.488916
+23,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,optimized,navigation-task-compact-v2,restricted-area-v1,1,True,True,True,28770.03319998039,20433.9802,98.9827,220,112,False,18,95,2.657499979250133,77.8203125,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""central_corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:31:51.666807
+24,ad5f9bb6-bb44-43af-8926-847361f5ab62,smollm2:1.7b-instruct-q4_K_M,optimized,navigation-task-compact-v2,restricted-area-v1,2,True,True,True,0.0,20433.9802,98.9827,220,112,True,18,95,17.001700005494058,77.82421875,,"{
+  ""objective"": ""navigate"",
+  ""start"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""goal"": {
+    ""x"": 0,
+    ""z"": 0
+  },
+  ""movement_preference"": ""shortest"",
+  ""avoid_areas"": [
+    ""central_corridor""
+  ],
+  ""replan_on_obstacle"": true,
+  ""clarification_needed"": false,
+  ""clarification_reason"": null
+}",2026-10-26 15:31:51.973373

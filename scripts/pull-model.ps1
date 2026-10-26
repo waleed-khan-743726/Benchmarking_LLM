@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('qwen3:0.6b','gemma3:1b','smollm2:1.7b-instruct-q4_K_M')]
+    [ValidateSet('qwen2.5:0.5b','qwen3:0.6b','smollm2:1.7b-instruct-q4_K_M')]
     [string]$Model
 )
 
@@ -14,8 +14,8 @@ if (-not $ollama) {
 }
 
 $sizesMB = @{
+    'qwen2.5:0.5b' = 398
     'qwen3:0.6b' = 523
-    'gemma3:1b' = 806
     'smollm2:1.7b-instruct-q4_K_M' = 1100
 }
 $drive = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='D:'"

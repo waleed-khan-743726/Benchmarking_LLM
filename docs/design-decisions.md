@@ -7,5 +7,5 @@
 5. **React Three Fiber.** It provides Three.js rendering with React lifecycle management while allowing lightweight instanced grid geometry.
 6. **SQLite plus portable exports.** SQLite supports history without infrastructure; JSON/CSV support research inspection.
 7. **Project-scoped storage redirection.** PowerShell launch/setup scripts set pip, npm, XDG, Hugging Face, temp, bytecode, result, report, and Ollama paths to D: for their child processes.
-8. **No automatic model pull.** Model downloads are user-visible, sequential, space-checked, and never required for the simulator.
+8. **Guarded model pulls.** The release installs its approved models sequentially after a D: space check; future pulls remain explicit, allow-listed, and never required for deterministic simulation.
 

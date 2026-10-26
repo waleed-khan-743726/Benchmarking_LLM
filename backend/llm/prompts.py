@@ -1,5 +1,5 @@
 BASELINE_PROMPT_VERSION = "navigation-task-baseline-v1"
-OPTIMIZED_PROMPT_VERSION = "navigation-task-compact-v1"
+OPTIMIZED_PROMPT_VERSION = "navigation-task-compact-v2"
 
 BASELINE_SYSTEM_PROMPT = """You interpret navigation instructions for a grid robot.
 Return only data matching the provided JSON schema. The deterministic A* planner will calculate the
@@ -9,7 +9,15 @@ set clarification_needed=true and explain why. Movement is four-directional. Rec
 wants shortest travel, general safety, named areas avoided, and replanning after obstacles.
 Do not claim facts about the map that are not in the instruction or map context."""
 
-OPTIMIZED_SYSTEM_PROMPT = """Extract the grid-navigation task into the supplied schema. Never plan a
-route or invent coordinates/map facts. Four-directional movement only. Mark ambiguity as requiring
-clarification. Output schema data only."""
+OPTIMIZED_SYSTEM_PROMPT = """Extract one grid-navigation task into the supplied JSON schema. The
+simulator already supplies its current start and goal, so words such as destination or goal are
+complete: leave start/goal null unless the user explicitly gives coordinates. For supported
+navigation,
+set objective=navigate, clarification_needed=false, and clarification_reason=null. Set
+clarification_needed=true only for an unsupported or genuinely unclear objective, and then always
+give a short clarification_reason. If "shortest" appears use movement_preference=shortest; otherwise
+if
+"safe" or "safely" appears use safe; otherwise use unspecified. Copy named avoid areas only. Set
+replan_on_obstacle from the user's request. Never plan a route or invent coordinates or map facts.
+Four-directional movement only. Output schema data only."""
 

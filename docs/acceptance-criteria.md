@@ -11,10 +11,10 @@ Status values: `TODO`, `IN PROGRESS`, `VERIFIED`, `BLOCKED`.
 | Replanning | A newly blocked next step stops movement and safely replans | VERIFIED |
 | API | Health, planning, simulation actions, and obstacle validation work | VERIFIED |
 | 3D UI | Grid, robot, goal, route, obstacles, camera, and editing work | VERIFIED |
-| LLM | Ollama health/model readiness are verified, not assumed | VERIFIED (runtime currently unavailable) |
-| LLM | At least three practical model tags are configurable | VERIFIED as candidates; not installed/tested |
-| Benchmark | Baseline/optimized engine persists real measurements | VERIFIED with controlled adapter; no live model run |
+| LLM | Ollama health/model readiness are verified, not assumed | VERIFIED with Ollama 0.40.11 and live inference |
+| LLM | At least three practical model tags are configurable | VERIFIED; three installed Apache-2.0 bundles switch in the UI |
+| Benchmark | Baseline/optimized engine persists real measurements | VERIFIED; 24 live observations stored |
 | Export | Historical data exports as JSON and CSV | VERIFIED |
-| Report | HTML/PDF reports are generated from stored evidence | VERIFIED |
+| Report | HTML/PDF reports are generated from stored evidence | VERIFIED and visually inspected |
 | Delivery | Windows setup, launch, health check, tests, and troubleshooting work | VERIFIED |
 

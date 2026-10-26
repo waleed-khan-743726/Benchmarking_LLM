@@ -3,7 +3,8 @@ $ProjectRoot = 'D:\Robot_Navigation_FYP'
 
 $targets = @(
     @{ File = (Join-Path $ProjectRoot '.tmp\backend.pid'); Expected = 'uvicorn backend.main:app'; Name = 'Backend' },
-    @{ File = (Join-Path $ProjectRoot '.tmp\frontend.pid'); Expected = 'vite.js*--host*127.0.0.1'; Name = 'Frontend' }
+    @{ File = (Join-Path $ProjectRoot '.tmp\frontend.pid'); Expected = 'vite.js*--host*127.0.0.1'; Name = 'Frontend' },
+    @{ File = (Join-Path $ProjectRoot '.tmp\ollama.pid'); Expected = 'ollama.exe*serve'; Name = 'Ollama' }
 )
 
 foreach ($target in $targets) {
