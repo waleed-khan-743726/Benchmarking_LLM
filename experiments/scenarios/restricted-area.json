@@ -1,0 +1,23 @@
+{
+  "id": "restricted-area-v1",
+  "name": "Named restricted area",
+  "instruction": "Navigate to the goal safely, avoid the central corridor, and replan if an obstacle appears.",
+  "grid": {
+    "width": 12,
+    "depth": 12,
+    "obstacles": [[5, 4], [5, 5], [5, 6], [6, 6], [7, 6]]
+  },
+  "start": [1, 1],
+  "goal": [10, 10],
+  "expected_task": {
+    "objective": "navigate",
+    "start": null,
+    "goal": null,
+    "movement_preference": "safe",
+    "avoid_areas": ["central corridor"],
+    "replan_on_obstacle": true,
+    "clarification_needed": false,
+    "clarification_reason": null
+  }
+}
+

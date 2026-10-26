@@ -1,0 +1,23 @@
+{
+  "id": "basic-shortest-v1",
+  "name": "Basic shortest safe route",
+  "instruction": "Move to the destination using the shortest safe route and replan if it becomes blocked.",
+  "grid": {
+    "width": 14,
+    "depth": 10,
+    "obstacles": [[4, 2], [4, 3], [4, 4], [7, 5], [8, 5], [9, 5]]
+  },
+  "start": [1, 1],
+  "goal": [12, 8],
+  "expected_task": {
+    "objective": "navigate",
+    "start": null,
+    "goal": null,
+    "movement_preference": "shortest",
+    "avoid_areas": [],
+    "replan_on_obstacle": true,
+    "clarification_needed": false,
+    "clarification_reason": null
+  }
+}
+
